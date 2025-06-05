@@ -45,4 +45,61 @@ function MostrarRegistros (datos){
     });
 }
 
+//Proceso para agregar registros
+const modal = document.getElementById("mdAgregar");//Cuadro de dialogo
+const btnAgregar= document.getElementById("btnAgregar");
+const btnCerrar= document.getElementById("btnCerrarModal");
 
+
+btnAgregar.addEventListener("click", ()=>{
+modal.showModal();//Abre el modal cuando a btnAgregar se le hace clic
+
+});
+
+
+btnCerrar.addEventListener("click",()=>{
+modal.close();//Cierra el modal
+
+});
+
+//Agregar un nuevo integrante desde el formulario
+document.getElementById("frmAgregar").addEventListener("submit", async e => {
+    e.preventDefault(); //Evita que los datos se envíen por defecto
+
+
+    //Capturar los valores del formulario 
+    const nombre = document.getElementById("txtNombre").value.trim();
+    const apellido = document.getElementById("txtApellido").value.trim();
+    const correo = document.getElementById("txtEmail").value.trim();
+
+    //Validacion basica
+    if(!nombre || !apellido || !correo){
+        alert("Complete todos los campos");
+        return; //Evita que el codigo se siga ejecutando 
+
+    }
+
+    //Llamar a la API para enviar los datos 
+    const respuesta = await fetch(API_URL, {
+        method:"POST",
+        headers: {'Content-Type':'application/json'},
+        body:JSON.stringify({nombre,apellido,correo})
+
+    });
+    if(respuesta.ok){
+        alert ("El registro fue agregado correctamente");
+
+        //Limpiar formulario
+        document.getElementById("frmAgregar").reset();
+
+        //cerrar el formulario
+        modal.close();
+
+        //recargar tabla
+        ObtenerRegistros();
+    }
+    else{
+        alert("Hubo un error al guardar");
+    }
+
+});
