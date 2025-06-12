@@ -33,7 +33,7 @@ function MostrarRegistros (datos){
                     <td>${persona.apellido}</td>
                     <td>${persona.correo}</td>
                     <td>
-        <button>Editar</button>
+        <button onclick="AbrirModalEditar('${persona.id}','${persona.nombre}','${persona.apellido}','${persona.correo}')">Editar</button>
         <button onclick="EliminarPersona(${persona.id})">Eliminar</button>
         </td>
         </tr>
@@ -119,5 +119,62 @@ if(confirmacion){
    ObtenerRegistros();
 }
 }
+
+
+/*Funcionalidad para editar registros*/
+const modalEditar = document.getElementById("mdEditar");
+const btnCerrarEditar =document.getElementById("btnCerrarEditar");
+
+/*Funcionalidad para cerrar el modal*/
+btnCerrarEditar.addEventListener("click" ,()=>{
+    modalEditar.close();//Cerrar Modal de editar
+});
+
+function AbrirModalEditar(id,nombre,apellido,correo){
+//Agregamos los valores a los input antes de abrir el modal
+        document.getElementById("txtIdEditar").value = id;
+        document.getElementById("txtNombreEditar").value = nombre;
+        document.getElementById("txtApellidoEditar").value = apellido;
+        document.getElementById("txtEmailEditar").value = correo;
+
+        //Modal se abre después de agregar los valores a los input
+        modalEditar.showModal();
+}
+
+document.getElementById("frmEditar").addEventListener("submit",async e =>{
+    e.preventDefault();//Evita que el formulario se envie de golpe 
+
+
+    //Capturamos los valores nuevos del formulario 
+    const id = document.getElementById("txtIdEditar").value;
+    const nombre= document.getElementById("txtNombreEditar").value.trim();
+    const apellido = document.getElementById("txtApellidoEditar").value.trim();
+    const correo = document.getElementById("txtEmailEditar").value.trim();
+
+
+    if(!id || !nombre || !apellido || !correo){
+        alert("Complete todos los campos");
+        return; //Evita que el codigo se siga ejecutando
+    }
+
+    //llamado a la api
+    const respuesta = await fetch (`${API_URL}/${id}`,{
+        method:"PUT",
+        headers:{"Content-Type":"application/json"},
+        body: JSON.stringify({correo,nombre,apellido})
+    });
+
+    if(respuesta.ok){
+        alert("Registro actualizado con éxito"); //Confirmacion 
+        modalEditar.close();//Cerramos el modal
+        ObtenerRegistros();//Recargamos la tabla
+
+
+    }
+    else{
+        alert("Hubo un error al actualizar");
+    }
+
+});
 
 
